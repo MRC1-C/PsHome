@@ -6,12 +6,13 @@ import {
   CoffeeOutlined,
   DollarCircleOutlined,
   LogoutOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { Link } from "react-router-dom";
-import { getRequest } from "../hooks/api";
+import { getRequest, postRequest } from "../hooks/api";
 import { useHistory } from "react-router";
-
+import { useStore } from "../hooks/useStore";
 const NavBarStyle = styled.div`
   background-color: white;
   display: flex;
@@ -29,20 +30,36 @@ const LogoutStyle = styled(LogoutOutlined)`
 export default function NavBar() {
   const history = useHistory();
   const [current, setCurrent] = useState("drink");
-  const [username, setUsername] = useState("");
+  const { username, timeplay, setMonney, setUsername, setFoods, setTimePlay } =
+    useStore((state) => ({
+      username: state.userName,
+      timeplay: state.timeplay,
+      setMonney: state.setMonney,
+      setUsername: state.setUserName,
+      setFoods: state.setFoods,
+      setTimePlay: state.setTimePlay,
+    }));
   useEffect(() => {
     const getUserName = async () => {
       try {
-        let name = await getRequest("/getusername");
+        let name = await getRequest("/getuser");
+        let foods = await getRequest("/getfood");
+        setFoods(foods);
         setUsername(name.username);
+        setTimePlay((name.monney * 60 * 60 * 1000) / 5000);
+        setMonney(name.monney);
       } catch (error) {
         console.log(error);
         history.push("/login");
       }
     };
     getUserName();
-  }, []);
-  const handleLogout = () => {
+  }, [history, setUsername, setFoods, setMonney, setTimePlay]);
+  const handleLogout = async () => {
+    console.log("object");
+    await postRequest("/moremonney", {
+      moremonney: (timeplay * 5000) / 1000 / 60 / 60,
+    });
     localStorage.clear();
     history.push("/login");
   };
@@ -75,6 +92,7 @@ export default function NavBar() {
           gap: "10px",
         }}
       >
+        <UserOutlined style={{ fontSize: "30px", marginBottom: "25px" }} />
         <p style={{ fontSize: "30px" }}>{username}</p>
         <LogoutStyle onClick={handleLogout} />
       </div>

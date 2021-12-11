@@ -1,7 +1,7 @@
 import Chat from "../pages/Chat";
 import Drink from "../pages/Drink";
 import Money from "../pages/Money";
-
+import Admin from "../pages/Admin";
 export const PUBLIC_ROUTER = [
   {
     key: "drink",
@@ -19,6 +19,12 @@ export const PUBLIC_ROUTER = [
     key: "money",
     path: "/money",
     container: Money,
+    exact: true,
+  },
+  {
+    key: "admin",
+    path: "/admin",
+    container: Admin,
     exact: true,
   },
 ];

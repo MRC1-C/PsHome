@@ -1,22 +1,22 @@
 import React from "react";
 import DrinkItem from "../components/DrinkItem";
 import styled from "styled-components";
-
+import { useStore } from "../hooks/useStore";
 const DrinkStyle = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  height: calc(100vh - 74px);
+  height: calc(100vh - 84px);
   overflow-y: auto;
-  margin: 10px 0 0 10px;
+  margin: 10px 0 10px 10px;
 `;
 
-const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export default function Drink() {
+  const foods = useStore((state) => state.foods);
   return (
     <DrinkStyle>
-      {arr.map((id) => (
-        <DrinkItem key={id} />
+      {foods.map((e) => (
+        <DrinkItem key={e.id} name={e.name} url={e.url} price={e.price} />
       ))}
     </DrinkStyle>
   );
