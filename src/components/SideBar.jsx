@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button, Modal, Form, Input, Statistic } from "antd";
 import { postRequest } from "../hooks/api";
-import moment from "moment";
 import { useStore } from "../hooks/useStore";
 import { useHistory } from "react-router";
-const { Countdown } = Statistic;
 const SideBarStyle = styled.div`
   background-color: white;
   height: 100%;
   padding: 10px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   .label {
     font-size: 25px;
   }
@@ -21,22 +22,48 @@ const SideBarStyle = styled.div`
 `;
 
 export default function SideBar() {
+  const mn = 5000;
   const history = useHistory();
   const [visible, setVisible] = useState(false);
+  const [monneytime, setMonneyTime] = useState(0);
   const [form] = Form.useForm();
-  const { monney, timeplay, setTimePlay } = useStore((state) => ({
-    monney: state.monney,
-    timeplay: state.timeplay,
-    setTimePlay: state.setTimePlay,
-  }));
-  const onFinish = async () => {
-    // await postRequest("/moremonney", {
-    //   moremonney: 1,
-    // });
-    console.log("object");
-    localStorage.clear();
-    history.push("/login");
+  const { monney, setMonneyNow, serviceFee, setServiceFee } = useStore(
+    (state) => ({
+      monney: state.monney,
+      setMonneyNow: state.setMonneyNow,
+      serviceFee: state.serviceFee,
+      setServiceFee: state.setServiceFee,
+    })
+  );
+  const convertTime = (value) => {
+    let time = (value * 60 * 60) / mn;
+    let h = parseInt(time / (60 * 60));
+    let p = parseInt((time - h * 60 * 60) / 60);
+    let s = parseInt(time - p * 60 - h * 60 * 60);
+    h = h > 9 ? h : "0" + h;
+    p = p > 9 ? p : "0" + p;
+    s = s > 9 ? s : "0" + s;
+    return h + ":" + p + ":" + s;
   };
+  useEffect(() => {
+    setServiceFee(0);
+  }, [setServiceFee]);
+  useEffect(() => {
+    let loop = setInterval(() => {
+      setMonneyTime(monneytime + mn / (60 * 60));
+      setMonneyNow(monney - monneytime);
+      if (monneytime >= monney) {
+        postRequest("/moremonney", {
+          moremonney: 0,
+        });
+        localStorage.clear();
+        history.push("/login");
+      }
+    }, 1000);
+    return () => {
+      clearInterval(loop);
+    };
+  }, [monneytime, history, monney, setMonneyNow]);
   return (
     <SideBarStyle>
       <div>
@@ -44,10 +71,7 @@ export default function SideBar() {
           title={
             <p style={{ fontSize: "20px", marginBottom: 0 }}>Tổng thời gian</p>
           }
-          value={(monney * 60 * 60 * 1000) / 5000}
-          formatter={(value) => (
-            <p>{moment(value - 8 * 60 * 60 * 1000).format("HH:mm:ss")}</p>
-          )}
+          value={convertTime(monney)}
         />
       </div>
       <div>
@@ -57,22 +81,17 @@ export default function SideBar() {
               Thời gian sử dụng
             </p>
           }
-          value={(monney * 60 * 60 * 1000) / 5000 - timeplay + 1000}
-          formatter={(value) => (
-            <p>{moment(value - 8 * 60 * 60 * 1000).format("HH:mm:ss")}</p>
-          )}
+          value={convertTime(monneytime)}
         />
       </div>
       <div>
-        <Countdown
+        <Statistic
           title={
             <p style={{ fontSize: "20px", marginBottom: 0 }}>
               Thời gian còn lại
             </p>
           }
-          value={Date.now() + timeplay}
-          onChange={(e) => setTimePlay(e)}
-          onFinish={onFinish}
+          value={convertTime(monney - monneytime + 1)}
         />
       </div>
       <div>
@@ -82,11 +101,12 @@ export default function SideBar() {
               Chi phí giờ chơi
             </p>
           }
-          value={5000}
+          value={mn}
         />
       </div>
       <div>
         <Statistic
+          value={serviceFee}
           title={
             <p style={{ fontSize: "20px", marginBottom: 0 }}>Chi phí dịch vụ</p>
           }
@@ -98,14 +118,20 @@ export default function SideBar() {
       <Modal
         visible={visible}
         title="Đổi mật khẩu"
-        onOk={async () => {
-          console.log(form.getFieldValue("newpassword"));
-          await postRequest("/changepassword", {
-            newpassword: form.getFieldValue("newpassword"),
-          });
-          setVisible(false);
-          form.resetFields();
-        }}
+        footer={
+          <Button
+            type="primary"
+            onClick={async () => {
+              await postRequest("/changepassword", {
+                newpassword: form.getFieldValue("newpassword"),
+              });
+              setVisible(false);
+              form.resetFields();
+            }}
+          >
+            Đổi mật khẩu
+          </Button>
+        }
         onCancel={() => {
           setVisible(false);
           form.resetFields();
@@ -115,11 +141,9 @@ export default function SideBar() {
           <Form.Item
             label="Nhập mật khẩu mới"
             name="newpassword"
-            rules={[
-              { required: true, message: "Please input your new password!" },
-            ]}
+            rules={[{ required: true, message: "Nhập mẩu khẩu mới" }]}
           >
-            <Input />
+            <Input.Password />
           </Form.Item>
         </Form>
       </Modal>

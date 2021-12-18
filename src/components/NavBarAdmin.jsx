@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import logo from "./image/logo.png";
 import {
-  WechatOutlined,
-  CoffeeOutlined,
-  DollarCircleOutlined,
   LogoutOutlined,
+  BellOutlined,
   UserOutlined,
+  CoffeeOutlined,
+  RiseOutlined,
 } from "@ant-design/icons";
-import { Menu } from "antd";
+import { Menu, Badge } from "antd";
 import { Link } from "react-router-dom";
-import { getRequest, postRequest } from "../hooks/api";
 import { useHistory } from "react-router";
+import { getRequest } from "../hooks/api";
 import { useStore } from "../hooks/useStore";
 const NavBarStyle = styled.div`
   background-color: white;
@@ -23,36 +23,25 @@ const LogoutStyle = styled(LogoutOutlined)`
   font-size: 30px;
   margin-bottom: 20px;
   &:hover {
-    color: #0d5cb6; // <Thing> when hovered
+    color: #0d5cb6;
   }
 `;
 
-export default function NavBar() {
+export default function NavBarAdmin() {
   const history = useHistory();
-  const [current, setCurrent] = useState("drink");
-  const { username, setUsername, monneynow, setMonney } = useStore((state) => ({
-    username: state.userName,
-    setUsername: state.setUserName,
-    monneynow: state.monneynow,
-    setMonney: state.setMonney,
+  const [current, setCurrent] = useState("user");
+  const { count, setCount } = useStore((state) => ({
+    count: state.count,
+    setCount: state.setCount,
   }));
   useEffect(() => {
-    const getUserName = async () => {
-      try {
-        let name = await getRequest("/getuser");
-        setUsername(name.username);
-        setMonney(name.monney);
-      } catch (error) {
-        console.log(error);
-        history.push("/login");
-      }
+    const getCount = async () => {
+      let count = await getRequest("/getcount");
+      setCount(count.count);
     };
-    getUserName();
-  }, [history, setUsername, setMonney]);
+    getCount();
+  }, [setCount]);
   const handleLogout = async () => {
-    await postRequest("/moremonney", {
-      moremonney: monneynow,
-    });
     localStorage.clear();
     history.push("/login");
   };
@@ -67,14 +56,24 @@ export default function NavBar() {
           selectedKeys={[current]}
           onClick={(e) => setCurrent(e.key)}
         >
-          <Menu.Item key="drink" icon={<CoffeeOutlined />}>
-            <Link to={"/"}>Gọi Đồ Ăn</Link>
+          <Menu.Item key="user" icon={<UserOutlined />}>
+            <Link to={"/admin/user"}>Quản lý tài khoản</Link>
           </Menu.Item>
-          <Menu.Item key="chat" icon={<WechatOutlined />}>
-            <Link to={"/chat"}>Nhắn tin</Link>
+          <Menu.Item key="foods" icon={<CoffeeOutlined />}>
+            <Link to={"/admin/foods"}>Quản lý đồ ăn và sự kiện</Link>
           </Menu.Item>
-          <Menu.Item key="money" icon={<DollarCircleOutlined />}>
-            <Link to={"/money"}>Nạp Tiền</Link>
+          <Menu.Item
+            key="notification"
+            icon={
+              <Badge count={count}>
+                <BellOutlined />
+              </Badge>
+            }
+          >
+            <Link to={"/admin/notification"}>Thông báo</Link>
+          </Menu.Item>
+          <Menu.Item key="statistical" icon={<RiseOutlined />}>
+            <Link to={"/admin/statistical"}>Thống kê doanh thu</Link>
           </Menu.Item>
         </Menu>
       </div>
@@ -86,7 +85,7 @@ export default function NavBar() {
         }}
       >
         <UserOutlined style={{ fontSize: "30px", marginBottom: "25px" }} />
-        <p style={{ fontSize: "30px" }}>{username}</p>
+        <p style={{ fontSize: "30px" }}>Admin</p>
         <LogoutStyle onClick={handleLogout} />
       </div>
     </NavBarStyle>

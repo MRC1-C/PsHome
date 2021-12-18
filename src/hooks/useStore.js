@@ -2,11 +2,17 @@ import create from "zustand";
 
 export const useStore = create((set) => ({
   userName: "",
+  admin: false,
   monney: 0,
-  timeplay: 1000,
+  monneynow: 0,
   foods: [],
+  count: 0,
+  serviceFee: 0,
+  setCount: (value) => set(() => ({ count: value })),
+  setServiceFee: (value) => set(() => ({ serviceFee: value })),
   setUserName: (value) => set(() => ({ userName: value })),
-  setMonney: (value) => set(() => ({ monney: value })),
+  setAdmin: (value) => set(() => ({ admin: value })),
   setFoods: (value) => set(() => ({ foods: value })),
-  setTimePlay: (value) => set(() => ({ timeplay: value })),
+  setMonney: (value) => set(() => ({ monney: value })),
+  setMonneyNow: (value) => set(() => ({ monneynow: value })),
 }));

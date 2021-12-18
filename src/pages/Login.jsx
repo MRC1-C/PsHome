@@ -4,6 +4,7 @@ import { postRequest } from "../hooks/api";
 import styled from "styled-components";
 import logo from "../components/image/logo.png";
 import { useHistory } from "react-router";
+import { useStore } from "../hooks/useStore";
 
 const LoginStyle = styled.div`
   max-width: 800px;
@@ -20,6 +21,7 @@ const LoginStyle = styled.div`
 export default function Login() {
   const history = useHistory();
   const [form] = Form.useForm();
+  const setMonney = useStore((state) => state.setMonney);
   const handleLogin = async () => {
     const { username, password } = form.getFieldValue();
     try {
@@ -29,7 +31,15 @@ export default function Login() {
       });
       if (data) {
         localStorage.setItem("accessToken", data?.access_token);
-        history.push("/");
+        if (data?.monney > 0) {
+          if (username === "admin") history.push("/admin/user");
+          else {
+            setMonney(data.monney);
+            history.push("/");
+          }
+        } else {
+          message.error("Bạn không đủ tiền");
+        }
       }
     } catch (err) {
       message.error("Tài khoản hoặc mật khẩu không chính xác");

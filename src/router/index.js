@@ -1,7 +1,10 @@
 import Chat from "../pages/Chat";
 import Drink from "../pages/Drink";
 import Money from "../pages/Money";
-import Admin from "../pages/Admin";
+import User from "../pages/Admin/User";
+import Notification from "../pages/Admin/Notification";
+import Foods from "../pages/Admin/Foods";
+import Statistical from "../pages/Admin/Statistical";
 export const PUBLIC_ROUTER = [
   {
     key: "drink",
@@ -21,10 +24,31 @@ export const PUBLIC_ROUTER = [
     container: Money,
     exact: true,
   },
+];
+
+export const PUBLIC_ROUTER_ADMIN = [
   {
-    key: "admin",
-    path: "/admin",
-    container: Admin,
+    key: "user",
+    path: "/admin/user",
+    container: User,
+    exact: true,
+  },
+  {
+    key: "event",
+    path: "/admin/notification",
+    container: Notification,
+    exact: true,
+  },
+  {
+    key: "foods",
+    path: "/admin/foods",
+    container: Foods,
+    exact: true,
+  },
+  {
+    key: "statistical",
+    path: "/admin/statistical",
+    container: Statistical,
     exact: true,
   },
 ];

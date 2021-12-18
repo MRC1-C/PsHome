@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DrinkItem from "../components/DrinkItem";
 import styled from "styled-components";
-import { useStore } from "../hooks/useStore";
+import { getRequest } from "../hooks/api";
 const DrinkStyle = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -12,7 +12,14 @@ const DrinkStyle = styled.div`
 `;
 
 export default function Drink() {
-  const foods = useStore((state) => state.foods);
+  const [foods, setFoods] = useState([]);
+  useEffect(() => {
+    const getFoods = async () => {
+      let foods = await getRequest("/getfood");
+      setFoods(foods);
+    };
+    getFoods();
+  }, []);
   return (
     <DrinkStyle>
       {foods.map((e) => (

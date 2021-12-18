@@ -1,8 +1,9 @@
-import { BrowserRouter, Switch, Route } from "react-router-dom"
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import PublicLayout from "./layout/PublicLayout";
+import PublicLayoutAdmin from "./layout/PublicLayoutAdmin";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-import { PUBLIC_ROUTER } from "./router/index";
+import { PUBLIC_ROUTER, PUBLIC_ROUTER_ADMIN } from "./router/index";
 
 function App() {
   return (
@@ -24,6 +25,25 @@ function App() {
               })}
             </Switch>
           </PublicLayout>
+        </Route>{" "}
+        <Route
+          exact={true}
+          path={PUBLIC_ROUTER_ADMIN.map((route) => route.path)}
+        >
+          <PublicLayoutAdmin>
+            <Switch>
+              {PUBLIC_ROUTER_ADMIN.map((item, id) => {
+                return (
+                  <Route
+                    key={item.key}
+                    path={item.path}
+                    exact={item.exact}
+                    component={item.container}
+                  ></Route>
+                );
+              })}
+            </Switch>
+          </PublicLayoutAdmin>
         </Route>{" "}
         <Route component={NotFound} />
       </Switch>
