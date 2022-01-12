@@ -27,7 +27,7 @@ const LogoutStyle = styled(LogoutOutlined)`
   }
 `;
 
-export default function NavBarAdmin() {
+export default function NavBarAdmin()  {
   const history = useHistory();
   const [current, setCurrent] = useState("user");
   const { count, setCount } = useStore((state) => ({
@@ -35,11 +35,14 @@ export default function NavBarAdmin() {
     setCount: state.setCount,
   }));
   useEffect(() => {
-    const getCount = async () => {
-      let count = await getRequest("/getcount");
-      setCount(count.count);
-    };
-    getCount();
+
+      const getCount = async () => {
+        let count = await getRequest("/noti/getcount");
+        setCount(count.count);
+      };
+      getCount();
+      
+    
   }, [setCount]);
   const handleLogout = async () => {
     localStorage.clear();

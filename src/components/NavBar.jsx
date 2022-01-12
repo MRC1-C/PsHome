@@ -39,7 +39,7 @@ export default function NavBar() {
   useEffect(() => {
     const getUserName = async () => {
       try {
-        let name = await getRequest("/getuser");
+        let name = await getRequest("/user/getuser");
         setUsername(name.username);
         setMonney(name.monney);
       } catch (error) {
@@ -50,7 +50,7 @@ export default function NavBar() {
     getUserName();
   }, [history, setUsername, setMonney]);
   const handleLogout = async () => {
-    await postRequest("/moremonney", {
+    await postRequest("/user/moremonney", {
       moremonney: monneynow,
     });
     localStorage.clear();

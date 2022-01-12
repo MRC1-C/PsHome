@@ -25,12 +25,12 @@ export default function Login() {
   const handleLogin = async () => {
     const { username, password } = form.getFieldValue();
     try {
-      let data = await postRequest("/login", {
+      let data = await postRequest("/user/login", {
         username: username,
         password: password,
       });
       if (data) {
-        localStorage.setItem("accessToken", data?.access_token);
+        localStorage.setItem("accessToken", data?.access);
         if (data?.monney > 0) {
           if (username === "admin") history.push("/admin/user");
           else {

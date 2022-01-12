@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Input, InputNumber } from "antd";
+import { Button, Form, Input, InputNumber, message } from "antd";
 import { postRequest } from "../../hooks/api";
 export default function FormCreate(props) {
   const [form] = Form.useForm();
@@ -20,6 +20,13 @@ export default function FormCreate(props) {
         <Input.Password />
       </Form.Item>
       <Form.Item
+        label="Xác nhận mật khẩu"
+        name="confirmpassword"
+        rules={[{ required: true, message: "Hãy xác nhận lại mật khẩu mật khẩu" }]}
+      >
+        <Input.Password />
+      </Form.Item>
+      <Form.Item
         label="Số tiền"
         name="monney"
         rules={[{ required: true, message: "Hãy nhập số tiền" }]}
@@ -36,8 +43,12 @@ export default function FormCreate(props) {
           block
           type="primary"
           onClick={async () => {
-            await postRequest("/createuser", form.getFieldsValue());
-            props.onCancel();
+            if (form.getFieldValue("confirmpassword") !== form.getFieldValue("password")) {
+              message.error("Mật khẩu xác nhận không khớp với mật khẩu"); 
+            } else {
+              await postRequest("/user/createuser", form.getFieldsValue());
+              props.onCancel();
+            }
           }}
         >
           Tạo

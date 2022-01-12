@@ -25,7 +25,7 @@ export default function MoneyItem(props) {
     setMonney: state.setMonney,
   }));
   const handleButton = async () => {
-    await postRequest("/createnotification", {
+    await postRequest("/noti/createnotification", {
       username: userName,
       name: `Nạp ${props.quantity} VNĐ`,
       notification: "Nạp tiền",

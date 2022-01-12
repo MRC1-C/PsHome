@@ -12,7 +12,7 @@ export default function Notification() {
   const setCount = useStore((state) => state.setCount);
   useEffect(() => {
     const getnotification = async () => {
-      let data = await getRequest("/getnotification");
+      let data = await getRequest("/noti/getnotification");
       setData(data);
     };
     getnotification();
@@ -24,10 +24,10 @@ export default function Notification() {
     });
   };
   const handleButtonDelete = async (id) => {
-    await postRequest("/deletenotification", { id: id });
-    let data = await getRequest("/getnotification");
+    await postRequest("/noti/deletenotification", { id: id });
+    let data = await getRequest("/noti/getnotification");
     setData(data);
-    let count = await getRequest("/getcount");
+    let count = await getRequest("/noti/getcount");
     setCount(count.count);
   };
   const columns = [

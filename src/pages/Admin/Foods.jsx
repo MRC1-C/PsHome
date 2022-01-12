@@ -22,7 +22,7 @@ export default function Foods() {
   }));
   useEffect(() => {
     const getFoods = async () => {
-      let foods = await getRequest("/getfood");
+      let foods = await getRequest("/food/getfood");
       setFoods(foods);
     };
     getFoods();
@@ -49,8 +49,8 @@ export default function Foods() {
           <Button
             type="primary"
             onClick={async () => {
-              await postRequest("/createfood", form.getFieldsValue());
-              let foods = await getRequest("/getfood");
+              await postRequest("/food/createfood", form.getFieldsValue());
+              let foods = await getRequest("/food/getfood");
               setFoods(foods);
               setVisible(false);
             }}
