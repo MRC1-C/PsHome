@@ -8,7 +8,7 @@ import ChatItem from "../components/ChatItem";
 import { useState, useEffect, useRef } from "react";
 import socketIOClient from "socket.io-client";
 
-const host = "http://127.0.0.1:3000";
+const host = "http://127.0.0.1:4000";
 /////////////////////////////////////////////////////////
 
 const WrapperStyled = styled.div`
@@ -167,15 +167,15 @@ export default function Chat() {
     <WrapperStyled>
       <ContentStyled >
         {/* ref={messageListRef}> */}
-         {renderMess}
+         {/* {renderMess} */}
         {/* {
                     data[0]?data[0].mess.map(dt => {
                         return <ChatItem you={dt.you==='quan'} text={dt.text} name={dt.you}/>
                     }):null
                 } */}
-        {/* <ChatItem text={message} you name={name} />
+        {/* <ChatItem text={renderMess} /> you name={name} /> */}
         <ChatItem text="dlddddddddddddjd" name="admin" />
-        <ChatItem text="dljdddddddddddddddddddddd" you name="quan" />
+        <ChatItem text="dljdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" you name="quan" />
         <ChatItem text="dldddddddddddddddjd" name="admin" />
         <ChatItem text="dljd" you name="quan" />
         <ChatItem text="dljd" name="admin" />
@@ -208,7 +208,7 @@ export default function Chat() {
         <ChatItem text="dlssssssssssssssssssssssssjd" you name="quan" />
         <ChatItem text="dddddddddddddddddđljd" name="admin" />
         <ChatItem text="dldddddddddddddddddddddjd" you name="quan" />
-        <ChatItem text="dljdddddddddddddddddđd" name="admin" /> */}
+        <ChatItem text="dljdddddddddddddddddđd" name="admin" />
       </ContentStyled>
       <FormStyled form={form}>
         <Form.Item name="text" style={{ width: "100%" }}>

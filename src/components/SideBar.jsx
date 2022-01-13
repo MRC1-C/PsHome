@@ -112,9 +112,12 @@ export default function SideBar() {
           }
         />
       </div>
+      
       <Button block type="primary" onClick={() => setVisible(true)}>
         Đổi mật khẩu
       </Button>
+
+
       <Modal
         visible={visible}
         title="Đổi mật khẩu"
@@ -171,6 +174,8 @@ export default function SideBar() {
           
         </Form>
       </Modal>
+
+
     </SideBarStyle>
   );
 }
