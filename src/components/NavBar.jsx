@@ -103,38 +103,31 @@ export default function NavBar() {
             Thông báo
           </Menu.Item>
 
+  
+          {/* ///////////////////////////////////////////////////////////////////////////////////// */}
 
-          <Modal
+
+        </Menu>
+        <Modal
             visible={visible}
             title="Thông báo"
-            footer={
-              <Button/>
-              //   type="primary"
-              //   onClick={async () => {
-              //       message.error("Mật khẩu xác nhận không khớp với mật khẩu mới");
-
-              //   }}
-              // >
-              //   Thông báo
-              // </Button>
-            }
+            // footer={
+            //   <Button/>
+              
+            // }
             onCancel={() => {
               setVisible(false);
               //form.resetFields();
             }}
           >
 
-            <Menu.Item
+            {/* <Menu.Item
               label="Xác nhận mật khẩu mới"
               name="confirmPassword"
               rules={[{ required: true, message: "Xác nhận mật khẩu mới" }]}
-            />
+            /> */}
 
           </Modal>
-          {/* ///////////////////////////////////////////////////////////////////////////////////// */}
-
-
-        </Menu>
       </div>
       <div
         style={{
