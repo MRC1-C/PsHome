@@ -6,14 +6,16 @@ import {
   CoffeeOutlined,
   BellOutlined,
   DollarCircleOutlined,
+  DeleteOutlined,
   LogoutOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Menu, Button, Modal, Badge, message } from "antd";
+import { Menu, Button, Modal, Badge, Popconfirm, message } from "antd";
 import { Link } from "react-router-dom";
 import { getRequest, postRequest } from "../hooks/api";
 import { useHistory } from "react-router";
 import { useStore } from "../hooks/useStore";
+// import { render } from "@testing-library/react";
 const NavBarStyle = styled.div`
   background-color: white;
   display: flex;
@@ -31,7 +33,10 @@ const LogoutStyle = styled(LogoutOutlined)`
 export default function NavBar() {
   const history = useHistory();
   const [visible, setVisible] = useState(false);
+  const [visible2, setVisible2] = useState(false);
   const [current, setCurrent] = useState("drink");
+  const [notification, setNotification] = useState([])
+  // const [data, setData] = useState();
   const { username, setUsername, monneynow, setMonney, count, setCount } = useStore((state) => ({
     username: state.userName,
     setUsername: state.setUserName,
@@ -56,19 +61,71 @@ export default function NavBar() {
     /////////////////////////////////////////////////////////////////////////////////////
     const getCount = async () => {
       setInterval(async () => {
-        let count = await getRequest("/noti/getcount");
+        let count = await getRequest("/noti/getcountuser");
         setCount(count.count);
       }, 2000)
+      // let count = await getRequest("/noti/getcountuser");
+      //   setCount(count.count);
     };
     getCount();
     /////////////////////////////////////////////////////////////////////////////////////
   }, [history, setUsername, setMonney]);
+
   const handleLogout = async () => {
     await postRequest("/user/moremonney", {
       moremonney: monneynow,
     });
     localStorage.clear();
     history.push("/login");
+  };
+
+  const deleteNoti = async () => {
+    await getRequest("/noti/deletenotification");
+    let data = await getRequest("/noti/getnotiuser");
+    setNotification(data);
+  };
+
+  const showNotification = async () => {
+    setVisible(true);
+    
+    let data = await getRequest("/noti/getnotiuser");
+    setNotification(data);
+    await getRequest("/noti/seennotification");
+  };
+  const checkNotification = (approve, name, seen) => {
+    if (approve === 1 && seen) {
+      return <div style={{ 
+        backgroundColor: "#AFD788", 
+        color: "#555555",
+        padding: "12px" }}
+      >
+        Yêu cầu {name} được chấp nhận
+      </div>
+    } else if (approve === 2 && seen) {
+      return <div style={{ 
+        backgroundColor: "#F5A89A", 
+        color: "#555555",
+        padding: "12px" }}
+      >
+        Yêu cầu {name} bị từ chối
+      </div>
+    } else if (approve === 1) {
+      return <div style={{ 
+        backgroundColor: "#009900", 
+        color: "white",
+        padding: "12px" }}
+      >
+        Yêu cầu {name} được chấp nhận
+      </div>
+    } else {
+      return <div style={{ 
+        backgroundColor: "red", 
+        color: "white",
+        padding: "12px" }}
+      >
+        Yêu cầu {name} bị từ chối
+      </div>
+    }
   };
   return (
     <NavBarStyle>
@@ -92,7 +149,8 @@ export default function NavBar() {
           </Menu.Item>
 
           {/* ///////////////////////////////////////////////////////////////////////////////////// */}
-          <Menu.Item block type="primary" onClick={() => setVisible(true)}
+          {/* <Menu.Item block type="primary" onClick={() => setVisible(true)} */}
+          <Menu.Item block type="primary" onClick={() => showNotification()}
             key="notification"
             icon={
               <Badge count={count}>
@@ -108,26 +166,40 @@ export default function NavBar() {
 
 
         </Menu>
+        
         <Modal
-            visible={visible}
-            title="Thông báo"
-            // footer={
-            //   <Button/>
+          visible={visible}
+          title="Thông báo"
+
+          footer={
+            <Popconfirm
+              title="Bạn có muốn xóa tất cả thông báo đã xem không?"
+              onConfirm={() => deleteNoti() }
+              okText="Có"
+              cancelText="Không"
+            >
+              <Button danger type="primary">
+                <DeleteOutlined /> Xóa
+              </Button>
+            </Popconfirm>
+
+          }
+          onCancel={() => {
+            setVisible(false);
+            //form.resetFields();
+          }}
+        >
+
+          <div style={{height: "300px", overflowY: "auto"}}>
+            {notification.map(e => <p style={{height: "50px"}}
+              key={e.notification}
+            >
+              {checkNotification(e.approve, e.name, e.seen)}
               
-            // }
-            onCancel={() => {
-              setVisible(false);
-              //form.resetFields();
-            }}
-          >
+            </p>)}
 
-            {/* <Menu.Item
-              label="Xác nhận mật khẩu mới"
-              name="confirmPassword"
-              rules={[{ required: true, message: "Xác nhận mật khẩu mới" }]}
-            /> */}
-
-          </Modal>
+          </div>
+        </Modal>
       </div>
       <div
         style={{

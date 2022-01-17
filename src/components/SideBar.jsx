@@ -128,12 +128,16 @@ export default function SideBar() {
               if (form.getFieldValue("confirmPassword") !== form.getFieldValue("newPassword")) {
                 message.error("Mật khẩu xác nhận không khớp với mật khẩu mới"); 
               } else {
-                await postRequest("/user/changepassword", {
+                let status = await postRequest("/user/changepassword", {
                   oldpassword: form.getFieldValue("oldPassword"),
                   newpassword: form.getFieldValue("newPassword"),
                 });
-                setVisible(false);
-                form.resetFields();
+                if (status?.status === 0) {
+                  message.error("Mật khẩu cũ không đúng");
+                } else {
+                  setVisible(false);
+                  form.resetFields();
+                }
               }
              
             }}
@@ -146,7 +150,7 @@ export default function SideBar() {
           form.resetFields();
         }}
       >
-        <Form form={form}>
+        <Form form={form} layout="vertical">
 
           <Form.Item
             label="Nhập mật khẩu cũ"

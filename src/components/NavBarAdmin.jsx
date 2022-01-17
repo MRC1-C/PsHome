@@ -39,6 +39,8 @@ export default function NavBarAdmin()  {
 
     const getCount = async () => {
 
+      // let count = await getRequest("/noti/getcount");
+      //   setCount(count.count);
       setInterval(async () => {
         let count = await getRequest("/noti/getcount");
         setCount(count.count);

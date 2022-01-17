@@ -31,7 +31,9 @@ export default function Login() {
       });
       if (data) {
         localStorage.setItem("accessToken", data?.access);
-        if (data?.monney > 0) {
+        if (data?.status === "lock") {
+          message.error("Tài khoản của bạn đang bị khóa");
+        } else if (data?.monney > 0) {
           if (username === "admin") history.push("/admin/user");
           else {
             setMonney(data.monney);
