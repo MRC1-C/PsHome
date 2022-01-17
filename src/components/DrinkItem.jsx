@@ -16,7 +16,7 @@ export default function DrinkItem(props) {
     setServiceFee: state.setServiceFee,
   }));
   const handleButton = async () => {
-    await postRequest("/createnotification", {
+    await postRequest("/noti/createnotification", {
       username: userName,
       name: props.name,
       notification: "Chi Phí Dịch vụ",

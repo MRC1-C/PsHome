@@ -12,7 +12,7 @@ export default function Notification() {
   const setCount = useStore((state) => state.setCount);
   useEffect(() => {
     const getnotification = async () => {
-      let data = await getRequest("/getnotification");
+      let data = await getRequest("/noti/getnotification");
       setData(data);
     };
     getnotification();
@@ -23,17 +23,18 @@ export default function Notification() {
       priceFood: classify ? 0 : monney,
     });
   };
-  const handleButtonDelete = async (id) => {
-    await postRequest("/deletenotification", { id: id });
-    let data = await getRequest("/getnotification");
+  const handleButtonReturn = async (id, check) => {
+    await postRequest("/noti/returnnotification", { id: id, check: check, });
+    let data = await getRequest("/noti/getnotification");
     setData(data);
-    let count = await getRequest("/getcount");
+    let count = await getRequest("/noti/getcount");
     setCount(count.count);
   };
   const columns = [
     {
       title: "Tên tài khoản",
       dataIndex: "username",
+      width: "10%",
     },
     {
       title: "Thông báo",
@@ -46,10 +47,12 @@ export default function Notification() {
     {
       title: "Số lượng",
       dataIndex: "quantity",
+      width: "10%"
     },
     {
       title: "Giá",
       dataIndex: "price",
+      width: "10%",
       render: (value) =>
         value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VNĐ",
     },
@@ -73,7 +76,7 @@ export default function Notification() {
                 record.price * record.quantity
               );
 
-              handleButtonDelete(record.id);
+              handleButtonReturn(record.id, 1);
             }}
           >
             Xác nhận
@@ -81,7 +84,7 @@ export default function Notification() {
           <Button
             danger
             type="primary"
-            onClick={() => handleButtonDelete(record.id)}
+            onClick={() => handleButtonReturn(record.id, 2)}
           >
             Từ chối
           </Button>

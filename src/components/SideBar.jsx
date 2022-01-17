@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Button, Modal, Form, Input, Statistic } from "antd";
+import { Button, Modal, Form, Input, Statistic, message} from "antd";
 import { postRequest } from "../hooks/api";
 import { useStore } from "../hooks/useStore";
 import { useHistory } from "react-router";
@@ -112,9 +112,12 @@ export default function SideBar() {
           }
         />
       </div>
+      
       <Button block type="primary" onClick={() => setVisible(true)}>
         Đổi mật khẩu
       </Button>
+
+
       <Modal
         visible={visible}
         title="Đổi mật khẩu"
@@ -122,11 +125,21 @@ export default function SideBar() {
           <Button
             type="primary"
             onClick={async () => {
-              await postRequest("/changepassword", {
-                newpassword: form.getFieldValue("newpassword"),
-              });
-              setVisible(false);
-              form.resetFields();
+              if (form.getFieldValue("confirmPassword") !== form.getFieldValue("newPassword")) {
+                message.error("Mật khẩu xác nhận không khớp với mật khẩu mới"); 
+              } else {
+                let status = await postRequest("/user/changepassword", {
+                  oldpassword: form.getFieldValue("oldPassword"),
+                  newpassword: form.getFieldValue("newPassword"),
+                });
+                if (status?.status === 0) {
+                  message.error("Mật khẩu cũ không đúng");
+                } else {
+                  setVisible(false);
+                  form.resetFields();
+                }
+              }
+             
             }}
           >
             Đổi mật khẩu
@@ -137,16 +150,36 @@ export default function SideBar() {
           form.resetFields();
         }}
       >
-        <Form form={form}>
+        <Form form={form} layout="vertical">
+
           <Form.Item
-            label="Nhập mật khẩu mới"
-            name="newpassword"
-            rules={[{ required: true, message: "Nhập mẩu khẩu mới" }]}
+            label="Nhập mật khẩu cũ"
+            name="oldPassword"
+            rules={[{ required: true, message: "Nhập mật khẩu cũ" }]}
           >
             <Input.Password />
           </Form.Item>
+
+          <Form.Item
+            label="Nhập mật khẩu mới"
+            name="newPassword"
+            rules={[{ required: true, message: "Nhập mật khẩu mới" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item
+            label="Xác nhận mật khẩu mới"
+            name="confirmPassword"
+            rules={[{ required: true, message: "Xác nhận mật khẩu mới" }]}
+          >
+            <Input.Password />
+          </Form.Item>  
+          
         </Form>
       </Modal>
+
+
     </SideBarStyle>
   );
 }

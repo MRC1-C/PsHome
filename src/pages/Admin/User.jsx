@@ -8,6 +8,8 @@ import {
   Popconfirm,
   Popover,
   InputNumber,
+  Badge,
+  message,
 } from "antd";
 import {
   PlusOutlined,
@@ -15,6 +17,7 @@ import {
   LockOutlined,
   DeleteOutlined,
   SearchOutlined,
+  WechatOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
 import Highlighter from "react-highlight-words";
@@ -35,17 +38,25 @@ class User extends React.Component {
     visible: false,
     data: [],
     monney: 1000,
+    is_locked: false,
   };
 
   deleteUser = async (name) => {
-    await postRequest("/deleteuser", {
+    await postRequest("/user/deleteuser", {
       username: name,
     });
-    let data = await getRequest("/getalluser");
+    let data = await getRequest("/user/getalluser");
     this.setState({ data: data });
   };
+  lockUser = async (name) => {
+    await postRequest("/user/lockuser", {
+      username: name,
+    });
+    let data = await getRequest("/user/getalluser");
+    this.setState({ data: data });
+  }
   componentDidMount = async () => {
-    let data = await getRequest("/getalluser");
+    let data = await getRequest("/user/getalluser");
     this.setState({ data: data });
   };
   getColumnSearchProps = (dataIndex) => ({
@@ -144,17 +155,43 @@ class User extends React.Component {
     this.setState({ searchText: "" });
   };
   handleMoreMonney = async (record) => {
-    await postRequest("/moremonneyuser", {
+    await postRequest("/user/moremonneyuser", {
       username: record.username,
       moremonney: record.monney + this.state.monney,
     });
     this.setState({ monney: 1000 });
-    let data = await getRequest("/getalluser");
+    let data = await getRequest("/user/getalluser");
     this.setState({ data: data });
   };
+  checkstatus = (status, name) => {
+    if (status) {
+      return <Popconfirm
+        title="Bạn có muốn mở khóa tài khoản này không?"
+        onConfirm={() => this.lockUser(name)}
+        okText="Có"
+        cancelText="Không"
+      >
+        <Button style={{ backgroundColor: "green", color: "white", width: "100%" }}>
+          <LockOutlined />
+          Mở khóa
+        </Button>
+      </Popconfirm>
+    } else {
+      return <Popconfirm
+        title="Bạn có muốn khóa tài khoản này không không?"
+        onConfirm={() => this.lockUser(name)}
+        okText="Có"
+        cancelText="Không"
+      >
+        <Button style={{ backgroundColor: "yellow", color: "gray", width: "100%" }}>
+          <LockOutlined />
+          Khóa
+        </Button>
+      </Popconfirm>
+  }}
   render() {
     const onCancel = async () => {
-      let data = await getRequest("/getalluser");
+      let data = await getRequest("/user/getalluser");
       this.setState({ data: data });
       this.setState({ visible: false });
     };
@@ -162,24 +199,75 @@ class User extends React.Component {
       {
         title: "Tên tài khoản",
         dataIndex: "username",
+        width: "25%",
         ...this.getColumnSearchProps("username"),
       },
-      {
-        title: "Mật khẩu",
-        dataIndex: "password",
-        render: (value) => <PasswordStyled value={value} />,
-      },
+      // {
+      //   title: "Chat",
+      //   dataIndex: "password",
+        
+      //   render: (value) => <PasswordStyled value={value} />,
+      // },
       {
         title: "Số tiền còn lại",
         dataIndex: "monney",
-        render: (value) =>
+        width: "20%",
+        render: (value) => 
           value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VNĐ",
         sorter: (a, b) => a.monney - b.monney,
+      },
+      {
+        title: "",
+        dataIndex: "is_locked",
+        width: "12%",
+
+        render: (value, record) => this.checkstatus(record.is_locked, record?.username)
+
+        // if (value) {
+        //   render: (record) =>
+        //   <Popconfirm
+        //       title="Bạn có muốn khóa không?"
+        //       onConfirm={() => this.lockUser(record?.username)}
+        //       okText="Có"
+        //       cancelText="Không"
+        //     >
+        //       <Button style={{ backgroundColor: "yellow", color: "gray" }}>
+        //         <LockOutlined />
+        //         Khóa
+        //       </Button>
+        //     </Popconfirm>
+        // }, else :{
+        //   render: (record) =>
+        //   <Popconfirm
+        //       title="Bạn có muốn mở khóa không?"
+        //       onConfirm={() => this.lockUser(record?.username)}
+        //       okText="Có"
+        //       cancelText="Không"
+        //     >
+        //       <Button style={{ backgroundColor: "green", color: "gray" }}>
+        //         <LockOutlined />
+        //         Mở khóa
+        //       </Button>
+        //     </Popconfirm>
+        // }
+        
+        
+        //   // <WechatOutlined style={{height: "20px", width: "20px"}}>
+        //   //   <Badge count={1} style={{height: "50%", width: "50%"}}></Badge>
+        //   // </WechatOutlined>
+        // ,
       },
       {
         dataIndex: "action",
         render: (text, record) => (
           <div style={{ display: "flex", gap: "5px" }}>
+
+            <Button type="primary" style={{ backgroundColor: "gray", color: "white", width: "25%", }}>
+              {/* <Badge count={1} /> */}
+              <WechatOutlined />
+              Chat
+            </Button>
+
             <Popover
               content={
                 <div
@@ -214,12 +302,24 @@ class User extends React.Component {
                 Nạp tiền
               </Button>
             </Popover>
-            <Button style={{ backgroundColor: "yellow", color: "gray" }}>
-              <LockOutlined />
-              Khóa
-            </Button>
+            
+            {/* ////////////////////////////////////////////////////////////////////////////////////// */}
+            
+            {/* <Popconfirm
+              title="Bạn có muốn khóa không ?"
+              onConfirm={() => this.lockUser(record?.username)}
+              okText="Có"
+              cancelText="Không"
+            >
+              <Button style={{ backgroundColor: "yellow", color: "gray" }}>
+                <LockOutlined />
+                Khóa
+              </Button>
+            </Popconfirm> */}
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+
             <Popconfirm
-              title="Bạn có muốn xóa không ?"
+              title="Bạn có muốn xóa tài khoản này không?"
               onConfirm={() => this.deleteUser(record?.username)}
               okText="Có"
               cancelText="Không"

@@ -15,7 +15,7 @@ export default function Drink() {
   const [foods, setFoods] = useState([]);
   useEffect(() => {
     const getFoods = async () => {
-      let foods = await getRequest("/getfood");
+      let foods = await getRequest("/food/getfood");
       setFoods(foods);
     };
     getFoods();

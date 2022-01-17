@@ -51,8 +51,8 @@ export default function DrinkItem(props) {
           block
           danger
           onClick={async () => {
-            await postRequest("/deletefood", { name: props.name });
-            let foods = await getRequest("/getfood");
+            await postRequest("/food/deletefood", { name: props.name });
+            let foods = await getRequest("/food/getfood");
             setFoods(foods);
           }}
         >
@@ -67,11 +67,11 @@ export default function DrinkItem(props) {
           <Button
             type="primary"
             onClick={async () => {
-              await postRequest("/editfood", {
+              await postRequest("/food/editfood", {
                 ...form.getFieldsValue(),
                 nameold: props.name,
               });
-              let foods = await getRequest("/getfood");
+              let foods = await getRequest("/food/getfood");
               setFoods(foods);
               setVisible(false);
             }}

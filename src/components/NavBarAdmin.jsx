@@ -27,7 +27,8 @@ const LogoutStyle = styled(LogoutOutlined)`
   }
 `;
 
-export default function NavBarAdmin() {
+
+export default function NavBarAdmin()  {
   const history = useHistory();
   const [current, setCurrent] = useState("user");
   const { count, setCount } = useStore((state) => ({
@@ -35,11 +36,20 @@ export default function NavBarAdmin() {
     setCount: state.setCount,
   }));
   useEffect(() => {
+
     const getCount = async () => {
-      let count = await getRequest("/getcount");
-      setCount(count.count);
+
+      // let count = await getRequest("/noti/getcount");
+      //   setCount(count.count);
+      setInterval(async () => {
+        let count = await getRequest("/noti/getcount");
+        setCount(count.count);
+      }, 2000)
+
     };
+
     getCount();
+
   }, [setCount]);
   const handleLogout = async () => {
     localStorage.clear();
@@ -89,5 +99,6 @@ export default function NavBarAdmin() {
         <LogoutStyle onClick={handleLogout} />
       </div>
     </NavBarStyle>
-  );
+  ); // end return
+
 }

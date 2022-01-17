@@ -25,13 +25,15 @@ export default function Login() {
   const handleLogin = async () => {
     const { username, password } = form.getFieldValue();
     try {
-      let data = await postRequest("/login", {
+      let data = await postRequest("/user/login", {
         username: username,
         password: password,
       });
       if (data) {
-        localStorage.setItem("accessToken", data?.access_token);
-        if (data?.monney > 0) {
+        localStorage.setItem("accessToken", data?.access);
+        if (data?.status === "lock") {
+          message.error("Tài khoản của bạn đang bị khóa");
+        } else if (data?.monney > 0) {
           if (username === "admin") history.push("/admin/user");
           else {
             setMonney(data.monney);
