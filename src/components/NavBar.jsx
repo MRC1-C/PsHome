@@ -10,7 +10,7 @@ import {
   LogoutOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Menu, Button, Modal, Badge, Popconfirm, message } from "antd";
+import { Menu, Button, Modal, Badge, Popconfirm } from "antd";
 import { Link } from "react-router-dom";
 import { getRequest, postRequest } from "../hooks/api";
 import { useHistory } from "react-router";
@@ -33,17 +33,18 @@ const LogoutStyle = styled(LogoutOutlined)`
 export default function NavBar() {
   const history = useHistory();
   const [visible, setVisible] = useState(false);
-  const [visible2, setVisible2] = useState(false);
   const [current, setCurrent] = useState("drink");
   const [notification, setNotification] = useState([])
   // const [data, setData] = useState();
-  const { username, setUsername, monneynow, setMonney, count, setCount } = useStore((state) => ({
+  const { username, setUsername, monneynow, setMonney, count, setCount, countMess, setCountMess} = useStore((state) => ({
     username: state.userName,
     setUsername: state.setUserName,
     monneynow: state.monneynow,
     setMonney: state.setMonney,
     count: state.count,
     setCount: state.setCount,
+    // countMess: state.countMess,
+    // setCountMess: state.setCountMess,
   }));
   useEffect(() => {
     const getUserName = async () => {
@@ -68,8 +69,17 @@ export default function NavBar() {
       //   setCount(count.count);
     };
     getCount();
-    /////////////////////////////////////////////////////////////////////////////////////
-  }, [history, setUsername, setMonney]);
+
+    // const getCountMess = async () => {
+    //   setInterval(async () => {
+    //     let countMess = await getRequest("/noti/getcountuser");
+    //     setCountMess(countMess.count);
+    //   }, 2000)
+    //   // let countMess = await getRequest("/chat/countusermessage");
+    //   //   setCountMess(countMess.count);
+    // };
+    // getCountMess();
+  }, [history, setUsername, setMonney, setCountMess, setCount]);
 
   const handleLogout = async () => {
     await postRequest("/user/moremonney", {
@@ -97,7 +107,8 @@ export default function NavBar() {
       return <div style={{ 
         backgroundColor: "#AFD788", 
         color: "#555555",
-        padding: "12px" }}
+        padding: "12px",
+      borderRadius: "5px" }}
       >
         Yêu cầu {name} được chấp nhận
       </div>
@@ -105,7 +116,8 @@ export default function NavBar() {
       return <div style={{ 
         backgroundColor: "#F5A89A", 
         color: "#555555",
-        padding: "12px" }}
+        padding: "12px",
+        borderRadius: "5px" }}
       >
         Yêu cầu {name} bị từ chối
       </div>
@@ -113,7 +125,8 @@ export default function NavBar() {
       return <div style={{ 
         backgroundColor: "#009900", 
         color: "white",
-        padding: "12px" }}
+        padding: "12px",
+        borderRadius: "5px" }}
       >
         Yêu cầu {name} được chấp nhận
       </div>
@@ -121,7 +134,9 @@ export default function NavBar() {
       return <div style={{ 
         backgroundColor: "red", 
         color: "white",
-        padding: "12px" }}
+        padding: "12px"
+        ,
+        borderRadius: "5px" }}
       >
         Yêu cầu {name} bị từ chối
       </div>
@@ -141,7 +156,13 @@ export default function NavBar() {
           <Menu.Item key="drink" icon={<CoffeeOutlined />}>
             <Link to={"/"}>Gọi Đồ Ăn</Link>
           </Menu.Item>
-          <Menu.Item key="chat" icon={<WechatOutlined />}>
+          <Menu.Item key="chat" 
+            icon={
+              <Badge >
+                <WechatOutlined />
+              </Badge>
+            }
+          >
             <Link to={"/chat"}>Nhắn tin</Link>
           </Menu.Item>
           <Menu.Item key="money" icon={<DollarCircleOutlined />}>

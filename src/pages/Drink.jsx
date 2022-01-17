@@ -5,7 +5,7 @@ import { getRequest } from "../hooks/api";
 const DrinkStyle = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 15px;
   height: calc(100vh - 84px);
   overflow-y: auto;
   margin: 10px 0 10px 10px;

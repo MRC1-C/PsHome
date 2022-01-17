@@ -5,7 +5,7 @@ import styled from "styled-components";
 const DrinkStyle = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 10px;
   height: calc(100vh - 74px);
   overflow-y: auto;
   margin: 10px 0 0 25px;

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import {
+  Form,
   Table,
   Button,
   Input,
@@ -8,7 +9,6 @@ import {
   Popconfirm,
   Popover,
   InputNumber,
-  Badge,
   message,
 } from "antd";
 import {
@@ -19,17 +19,19 @@ import {
   SearchOutlined,
   WechatOutlined,
 } from "@ant-design/icons";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import Highlighter from "react-highlight-words";
 import { getRequest, postRequest } from "../../hooks/api";
 import FormCreate from "./FormCreate";
+import Chat from "../Chat";
+import ChatAdmin from "./ChatAdmin";
 const UserStyled = styled.div`
   height: calc(100vh - 110px);
   margin: 40px 20px 0 20px;
 `;
-const PasswordStyled = styled(Input.Password)`
-  border: none;
-`;
+
+
+
 
 class User extends React.Component {
   state = {
@@ -39,7 +41,12 @@ class User extends React.Component {
     data: [],
     monney: 1000,
     is_locked: false,
+    visibleChat: false,
+    username: "",
+    changePassword: ""
   };
+
+  
 
   deleteUser = async (name) => {
     await postRequest("/user/deleteuser", {
@@ -158,11 +165,19 @@ class User extends React.Component {
     await postRequest("/user/moremonneyuser", {
       username: record.username,
       moremonney: record.monney + this.state.monney,
-    });
+    }).then(data => message.success("Nạp tiền thành công"))
+    .catch(err=> message.warning("Nạp tiền thất bại"));
     this.setState({ monney: 1000 });
     let data = await getRequest("/user/getalluser");
     this.setState({ data: data });
   };
+  handleChangePassword = (username)=>{
+    postRequest("/user/changepassadmin",{
+      username: username,
+      newPassword: this.state.changePassword
+    }).then(data => message.success("Đổi mật khẩu thành công"))
+    .catch(err=> message.warning("Đổi mật khẩu thất bại"))
+  }
   checkstatus = (status, name) => {
     if (status) {
       return <Popconfirm
@@ -202,12 +217,6 @@ class User extends React.Component {
         width: "25%",
         ...this.getColumnSearchProps("username"),
       },
-      // {
-      //   title: "Chat",
-      //   dataIndex: "password",
-        
-      //   render: (value) => <PasswordStyled value={value} />,
-      // },
       {
         title: "Số tiền còn lại",
         dataIndex: "monney",
@@ -222,47 +231,17 @@ class User extends React.Component {
         width: "12%",
 
         render: (value, record) => this.checkstatus(record.is_locked, record?.username)
-
-        // if (value) {
-        //   render: (record) =>
-        //   <Popconfirm
-        //       title="Bạn có muốn khóa không?"
-        //       onConfirm={() => this.lockUser(record?.username)}
-        //       okText="Có"
-        //       cancelText="Không"
-        //     >
-        //       <Button style={{ backgroundColor: "yellow", color: "gray" }}>
-        //         <LockOutlined />
-        //         Khóa
-        //       </Button>
-        //     </Popconfirm>
-        // }, else :{
-        //   render: (record) =>
-        //   <Popconfirm
-        //       title="Bạn có muốn mở khóa không?"
-        //       onConfirm={() => this.lockUser(record?.username)}
-        //       okText="Có"
-        //       cancelText="Không"
-        //     >
-        //       <Button style={{ backgroundColor: "green", color: "gray" }}>
-        //         <LockOutlined />
-        //         Mở khóa
-        //       </Button>
-        //     </Popconfirm>
-        // }
-        
-        
-        //   // <WechatOutlined style={{height: "20px", width: "20px"}}>
-        //   //   <Badge count={1} style={{height: "50%", width: "50%"}}></Badge>
-        //   // </WechatOutlined>
-        // ,
       },
       {
         dataIndex: "action",
         render: (text, record) => (
           <div style={{ display: "flex", gap: "5px" }}>
 
-            <Button type="primary" style={{ backgroundColor: "gray", color: "white", width: "25%", }}>
+            <Button 
+              type="primary" 
+              style={{ backgroundColor: "gray", color: "white", width: "25%", }}
+              onClick={() => {this.setState({visibleChat: true});this.setState({username: record.username});}}  
+            >
               {/* <Badge count={1} /> */}
               <WechatOutlined />
               Chat
@@ -302,22 +281,6 @@ class User extends React.Component {
                 Nạp tiền
               </Button>
             </Popover>
-            
-            {/* ////////////////////////////////////////////////////////////////////////////////////// */}
-            
-            {/* <Popconfirm
-              title="Bạn có muốn khóa không ?"
-              onConfirm={() => this.lockUser(record?.username)}
-              okText="Có"
-              cancelText="Không"
-            >
-              <Button style={{ backgroundColor: "yellow", color: "gray" }}>
-                <LockOutlined />
-                Khóa
-              </Button>
-            </Popconfirm> */}
-            {/* /////////////////////////////////////////////////////////////////////////////// */}
-
             <Popconfirm
               title="Bạn có muốn xóa tài khoản này không?"
               onConfirm={() => this.deleteUser(record?.username)}
@@ -328,36 +291,88 @@ class User extends React.Component {
                 <DeleteOutlined /> Xóa
               </Button>
             </Popconfirm>
+            <Popover
+              content={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
+                  <Input.Password
+                    value={this.state.changePassword}
+                    onChange={(e) => this.setState({ changePassword: e.target.value })}
+                    style={{ width: "100%" }}
+                  />
+                  <Button
+                    onClick={() => this.handleChangePassword(record.username)}
+                    block
+                    type="primary"
+                  >
+                    Đổi
+                  </Button>
+                </div>
+              }
+              title="Nhập mật khẩu mới"
+              trigger="click"
+            >
+              <Button type="primary">
+                <DollarCircleOutlined />
+                Đổi mật khẩu
+              </Button>
+            </Popover>
             ,
           </div>
         ),
       },
     ];
     return (
-      <UserStyled>
-        <Button
-          style={{ marginBottom: "30px" }}
-          type="primary"
-          onClick={() => this.setState({ visible: true })}
-        >
-          <PlusOutlined />
-          Tạo tài khoản
-        </Button>
-        <Table
-          rowKey={(record) => record.id}
-          tableLayout="fixed"
-          columns={columns}
-          dataSource={this.state.data}
-        />
+      <div>
+        <UserStyled>
+          <Button
+            style={{ marginBottom: "30px" }}
+            type="primary"
+            onClick={() => this.setState({ visible: true })}
+          >
+            <PlusOutlined />
+            Tạo tài khoản
+          </Button>
+          <Table
+            rowKey={(record) => record.id}
+            tableLayout="fixed"
+            columns={columns}
+            dataSource={this.state.data}
+          />
+          <Modal
+            title="Tạo tài khoản mới"
+            visible={this.state.visible}
+            onCancel={() => this.setState({ visible: false })}
+            footer={false}
+          >
+            <FormCreate onCancel={onCancel} />
+          </Modal>
+        </UserStyled>
         <Modal
-          title="Tạo tài khoản mới"
-          visible={this.state.visible}
-          onCancel={() => this.setState({ visible: false })}
-          footer={false}
+          visible={this.state.visibleChat}
+          title="Chat"
+
+          footer={
+            <Button />
+
+          }
+          onCancel={() => {
+            this.setState({visibleChat: false});
+            //form.resetFields();
+          }}
         >
-          <FormCreate onCancel={onCancel} />
+          {
+            this.state.visibleChat ?
+          <ChatAdmin username={this.state.username}/>
+          :<div></div>
+          }
         </Modal>
-      </UserStyled>
+    </div>
     );
   }
 }

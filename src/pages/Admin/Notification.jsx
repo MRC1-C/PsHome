@@ -18,7 +18,7 @@ export default function Notification() {
     getnotification();
   }, []);
   const handleButton = async (classify, monney) => {
-    await postRequest("/createstatistical", {
+    await postRequest("/stat/createstatistical", {
       priceMonney: classify ? monney : 0,
       priceFood: classify ? 0 : monney,
     });

@@ -2,11 +2,11 @@ import React from "react";
 import { Form, Input, Button } from "antd";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import ChatItem from "../components/ChatItem"
-import { getRequest, postRequest } from "../hooks/api";
+import ChatItem from "../../components/ChatItem"
+import { getRequest, postRequest } from "../../hooks/api";
 
 const WrapperStyled = styled.div`
-  height: calc(100vh - 72px);
+  height: 500px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -23,26 +23,28 @@ const FormStyled = styled(Form)`
   padding: 10px;
 `;
 
-export default function Chat() {
+export default function ChatAdmin(props) {
   const [form] = Form.useForm();
   const inputRef = React.useRef(null);
   const [message, setMessage] = useState([]);
 
   useEffect(()=>{
     let m = setInterval(async () => {
-      // let data = await getRequest("/chat/viewchat");
-      let data = await getRequest("/chat/viewchat");
+      let data = await postRequest("/chat/viewchatadmin",{
+          username: props.username
+      });
       setMessage(data);
     }, 1000)
     return ()=>{
       clearInterval(m)
     }
-  },[])
+  },[props.username])
 
   const handleSent = () => {
-       postRequest("/chat/sendmessage",{
+       postRequest("/chat/sendmessadmin",{
+         username: props.username,
          chat: form.getFieldValue("text"),
-         checkUser: true,
+         checkUser: false,
        })
        form.resetFields()
   };
@@ -53,7 +55,7 @@ export default function Chat() {
         
         {
           message.map(dt => {
-            return <ChatItem you={dt.checkUser} text={dt.chat} name={dt.checkUser?dt.username:"A"} />
+            return <ChatItem you={!dt.checkUser} text={dt.chat} name={dt.checkUser?dt.username:"A"} />
           })
         } 
       </ContentStyled>
